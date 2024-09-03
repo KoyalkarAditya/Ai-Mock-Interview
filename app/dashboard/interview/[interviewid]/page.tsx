@@ -9,10 +9,10 @@ interface Params {
   interviewid: string;
 }
 
-interface InterviewProps {
+export interface InterviewProps {
   params: Params;
 }
-interface Interview {
+export interface Interview {
   id: string;
   jsonMockResp: string;
   jobPosition: string;

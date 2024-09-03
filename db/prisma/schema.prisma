@@ -32,6 +32,7 @@ model UserAnswer {
   userAnswer String
   interviewId String
   rating Int
+  feedback String
   userEmail String
   interview MockInterview @relation(fields: [interviewId],references: [id])
   createdAt DateTime @default(now())
