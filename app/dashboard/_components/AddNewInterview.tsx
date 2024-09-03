@@ -14,6 +14,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { chatSession } from "@/utils/AiModel";
 import { useUser } from "@clerk/nextjs";
 import { LoaderCircle } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export const AddNewInterview = () => {
@@ -23,7 +24,7 @@ export const AddNewInterview = () => {
   const [jobExperience, setJobExperience] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [jsonResponse, setJsonResponse] = useState([]);
-
+  const route = useRouter();
   const user = useUser();
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -42,6 +43,7 @@ export const AddNewInterview = () => {
         user.user?.primaryEmailAddress?.emailAddress as string
       );
       setOpen(false);
+      route.push("/dashboard/interview/" + interview.id);
     } catch (e) {
       console.log(e);
       throw new Error("Error while creating interview");
