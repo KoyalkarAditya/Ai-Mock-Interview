@@ -22,4 +22,17 @@ model MockInterview {
   jobExperience String 
   createdBy String
   createdAt DateTime @default(now())
+  answers UserAnswer[]
+}
+
+model UserAnswer {
+  id String @id @default(cuid())
+  question String
+  correctAnswer String
+  userAnswer String
+  interviewId String
+  rating Int
+  userEmail String
+  interview MockInterview @relation(fields: [interviewId],references: [id])
+  createdAt DateTime @default(now())
 }
