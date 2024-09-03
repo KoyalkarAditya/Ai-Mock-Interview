@@ -39,7 +39,7 @@ export default function Interview({ params }: InterviewProps) {
   }
   return (
     <div className="my-10 flex flex-col ">
-      <div className="font-bold text-2xl">Let's Get Started</div>
+      <div className="font-bold text-2xl">Let&apos;s Get Started</div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
         <div>
           {webCaMEnabled ? (
