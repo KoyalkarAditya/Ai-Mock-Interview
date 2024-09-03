@@ -31,7 +31,7 @@ export const RecordAnswerSection = ({
 
     if (!recognitionRef.current) {
       const recognitionInstance = new SpeechRecognition();
-      recognitionInstance.continuous = true; // Allows continuous listening
+      recognitionInstance.continuous = false;
       recognitionInstance.interimResults = false;
 
       recognitionInstance.onresult = function (event) {
@@ -41,6 +41,7 @@ export const RecordAnswerSection = ({
 
       recognitionInstance.onstart = () => {
         setIsRecording(true);
+        setUserAnswer(""); // Clear previous answer on start
       };
 
       recognitionInstance.onend = () => {
@@ -51,15 +52,20 @@ export const RecordAnswerSection = ({
     }
 
     if (isRecording) {
-      console.log(userAnswer);
       recognitionRef.current.stop();
-      //UpdateUserAnswer();
-      setIsRecording(false);
     } else {
       recognitionRef.current.start();
-      setIsRecording(true);
     }
   };
+  useEffect(() => {
+    if (isRecording) {
+      console.log("Recording in progress...");
+    } else {
+      console.log(userAnswer);
+      console.log("Recording stopped.");
+      UpdateUserAnswer();
+    }
+  }, [isRecording]);
 
   const UpdateUserAnswer = async () => {
     console.log(userAnswer);
