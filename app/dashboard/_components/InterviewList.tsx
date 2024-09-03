@@ -1,10 +1,17 @@
 "use client";
 import { GetUserInterviews } from "@/app/actions/GetUserInterviews";
 import { useUser } from "@clerk/nextjs";
-import { MockInterview } from "@prisma/client";
 import { useEffect, useState } from "react";
 import { InterviewItemCard } from "./InterviewItemCard";
-
+interface MockInterview {
+  id: string;
+  jsonMockResp: string;
+  jobPosition: string;
+  jobDesc: string;
+  jobExperience: string;
+  createdBy: string;
+  createdAt: Date;
+}
 export const InterviewList = () => {
   const [prevInterviews, setPrevInterviews] = useState<MockInterview[]>();
   const { user } = useUser();

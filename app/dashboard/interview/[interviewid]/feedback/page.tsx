@@ -2,7 +2,17 @@
 import { useEffect, useState } from "react";
 import { InterviewProps } from "../page";
 import { GetUserAnswers } from "@/app/actions/GetUserAnswers";
-import { UserAnswer } from "@prisma/client";
+interface UserAnswer {
+  id: string;
+  question: string;
+  correctAnswer: string;
+  userAnswer: string;
+  interviewId: string;
+  rating: number;
+  feedback: string;
+  userEmail: string;
+  createdAt: Date;
+}
 import {
   Collapsible,
   CollapsibleContent,

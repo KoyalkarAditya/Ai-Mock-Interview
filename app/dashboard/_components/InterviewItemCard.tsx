@@ -1,7 +1,15 @@
 import { Button } from "@/components/ui/button";
-import { MockInterview } from "@prisma/client";
 import { useRouter } from "next/navigation";
 
+interface MockInterview {
+  id: string;
+  jsonMockResp: string;
+  jobPosition: string;
+  jobDesc: string;
+  jobExperience: string;
+  createdBy: string;
+  createdAt: Date;
+}
 export const InterviewItemCard = ({
   interview,
 }: {
