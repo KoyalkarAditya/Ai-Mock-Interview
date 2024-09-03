@@ -4,8 +4,17 @@ import { Mic, Webcam as WebcamLogo } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import useSpeechToText from "react-hook-speech-to-text";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
+import { QuestionsAndAnswer } from "../page";
+import { chatSession } from "@/utils/AiModel";
 
-export const RecordAnswerSection = () => {
+export const RecordAnswerSection = ({
+  questionsAndAnswers,
+  activeQuestionIndex,
+}: {
+  questionsAndAnswers: QuestionsAndAnswer[] | undefined;
+  activeQuestionIndex: number;
+}) => {
   const [userAnswer, setUserAnswer] = useState("");
   const {
     error,
@@ -29,6 +38,30 @@ export const RecordAnswerSection = () => {
     });
   }, [results]);
 
+  const saveUserAnswer = async () => {
+    if (isRecording) {
+      stopSpeechToText();
+      if (userAnswer.length < 10) {
+        toast("Error while recording answer, Answer is too small");
+        return;
+      }
+      const feedbackPrompt = `Question:${
+        questionsAndAnswers?.[activeQuestionIndex].question as string
+      } Answer:${userAnswer}. Depending on the above question and answer give the rating for the answer and feedback as area of improvement in json format with 3 to 4 lines each as {rating : number,feedback:string}`;
+      console.log(questionsAndAnswers);
+      console.log(
+        questionsAndAnswers?.[activeQuestionIndex].question as string
+      );
+      const result = await chatSession.sendMessage(feedbackPrompt);
+      const response = result.response.text();
+      const jsonResponse = JSON.parse(response);
+      console.log(jsonResponse);
+    } else {
+      setUserAnswer("");
+      startSpeechToText();
+    }
+  };
+
   return (
     <div className="border flex flex-col justify-center items-center my-16 p-5 gap-5">
       <div className="flex flex-col items-center   rounded-lg  ">
@@ -44,15 +77,12 @@ export const RecordAnswerSection = () => {
         />
       </div>
       <div className=" border flex justify-center items-center">
-        <Button
-          variant={"outline"}
-          onClick={isRecording ? stopSpeechToText : startSpeechToText}
-        >
+        <Button variant={"outline"} onClick={saveUserAnswer}>
           {isRecording ? (
-            <h2 className="flex items-center">
+            <div className="flex items-center">
               <Mic />
-              <h2 className="text-red-600">Stop Recording</h2>
-            </h2>
+              <div className="text-red-600">Stop Recording</div>
+            </div>
           ) : (
             "Start Recording"
           )}

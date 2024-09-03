@@ -36,7 +36,10 @@ export default function StartInterview({ params }: InterviewProps) {
           questionsAndAnswers={questionsAndAnswers}
           activeQuestionIndex={activeQuestionIndex}
         />
-        <RecordAnswerSection />
+        <RecordAnswerSection
+          questionsAndAnswers={questionsAndAnswers}
+          activeQuestionIndex={activeQuestionIndex}
+        />
       </div>
     </div>
   );
