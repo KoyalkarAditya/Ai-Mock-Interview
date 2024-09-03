@@ -22,7 +22,7 @@ export const QuestionSection = ({
         {questionsAndAnswers?.map((qna, index) => (
           <div
             className={` bg-secondary text-xs text-center md:text-sm  cursor-pointer  rounded-full p-2 ${
-              activeQuestionIndex == index && "bg-primary text-white"
+              activeQuestionIndex == index && "bg-[#3d3afd] text-white"
             }`}
             key={index}
           >

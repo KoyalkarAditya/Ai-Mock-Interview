@@ -2,14 +2,13 @@
 import Webcam from "react-webcam";
 import { Mic, Webcam as WebcamLogo } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import useSpeechToText from "react-hook-speech-to-text";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { toast } from "sonner";
 import { QuestionsAndAnswer } from "../page";
-import { chatSession } from "@/utils/AiModel";
 import { Interview } from "../../page";
 import { CreateUserAnswer } from "@/app/actions/CreateUserAnswer";
 import { useUser } from "@clerk/nextjs";
+import { chatSession } from "@/utils/AiModel";
 
 export const RecordAnswerSection = ({
   questionsAndAnswers,
@@ -22,64 +21,70 @@ export const RecordAnswerSection = ({
 }) => {
   const [userAnswer, setUserAnswer] = useState("");
   const [loading, setLoading] = useState(false);
-  const {
-    error,
-    interimResult,
-    isRecording,
-    results,
-    startSpeechToText,
-    stopSpeechToText,
-  } = useSpeechToText({
-    continuous: true,
-    useLegacyResults: false,
-  });
   const { user } = useUser();
-  if (error) return <p>Web Speech API is not available in this browser 🤷‍</p>;
-  useEffect(() => {
-    results.map((result) => {
-      if (typeof result === "object" && result !== null) {
-        setUserAnswer((prevAns) => prevAns + result.transcript);
-      } else if (typeof result === "string") {
-        setUserAnswer((prevAns) => prevAns + result);
-      }
-    });
-  }, [results]);
+  const [isRecording, setIsRecording] = useState(false);
+  const recognitionRef = useRef<SpeechRecognition | null>(null);
 
-  const saveUserAnswer = async () => {
-    if (isRecording) {
-      stopSpeechToText();
+  const StartStopRecording = async () => {
+    const SpeechRecognition =
+      window.SpeechRecognition || window.webkitSpeechRecognition;
 
-      if (userAnswer.length < 10) {
-        toast("Error while recording answer, Answer is too small");
-        return;
-      }
+    if (!recognitionRef.current) {
+      const recognitionInstance = new SpeechRecognition();
+      recognitionInstance.continuous = true; // Allows continuous listening
+      recognitionInstance.interimResults = false;
 
-      setLoading(true);
-      const feedbackPrompt = `Question:${
-        questionsAndAnswers?.[activeQuestionIndex].question as string
-      } Answer:${userAnswer}. Depending on the above question and answer give the rating(1-5) for the answer and feedback as area of improvement in json format with 3 to 4 lines each as {rating : number,feedback:string}`;
-
-      const result = await chatSession.sendMessage(feedbackPrompt);
-      const response = result.response.text();
-      const jsonResponse = JSON.parse(response);
-
-      const userAnswerData = {
-        userAnswer,
-        rating: jsonResponse.rating,
-        question: questionsAndAnswers?.[activeQuestionIndex].question as string,
-        userEmail: user?.primaryEmailAddress?.emailAddress as string,
-        correctAnswer: questionsAndAnswers?.[activeQuestionIndex]
-          .answer as string,
-        feedback: jsonResponse.feedback,
+      recognitionInstance.onresult = function (event) {
+        const transcript = event.results[0][0].transcript;
+        setUserAnswer(transcript);
       };
 
-      const res = await CreateUserAnswer(interview.id, userAnswerData);
-      setLoading(false);
-      if (res) {
-        toast("User answer Recorded Successfully");
-      }
+      recognitionInstance.onstart = () => {
+        setIsRecording(true);
+      };
+
+      recognitionInstance.onend = () => {
+        setIsRecording(false);
+      };
+
+      recognitionRef.current = recognitionInstance;
+    }
+
+    if (isRecording) {
+      console.log(userAnswer);
+      recognitionRef.current.stop();
+      UpdateUserAnswer();
     } else {
-      startSpeechToText();
+      recognitionRef.current.start();
+    }
+  };
+
+  const UpdateUserAnswer = async () => {
+    console.log(userAnswer);
+    setLoading(true);
+    const feedbackPrompt = `Question:${
+      questionsAndAnswers?.[activeQuestionIndex].question as string
+    } Answer:${userAnswer}. Depending on the above question and answer give the rating(1-5) for the answer and feedback as area of improvement in json format with 3 to 4 lines each as {rating : number,feedback:string}`;
+
+    const result = await chatSession.sendMessage(feedbackPrompt);
+    const response = result.response.text();
+    const jsonResponse = JSON.parse(response);
+
+    const userAnswerData = {
+      userAnswer,
+      rating: jsonResponse.rating,
+      question: questionsAndAnswers?.[activeQuestionIndex].question as string,
+      userEmail: user?.primaryEmailAddress?.emailAddress as string,
+      correctAnswer: questionsAndAnswers?.[activeQuestionIndex]
+        .answer as string,
+      feedback: jsonResponse.feedback,
+    };
+
+    const res = await CreateUserAnswer(interview.id, userAnswerData);
+    setLoading(false);
+    if (res) {
+      console.log(res);
+      toast("User answer Recorded Successfully");
     }
   };
 
@@ -98,7 +103,7 @@ export const RecordAnswerSection = ({
         />
       </div>
       <div className=" border flex justify-center items-center">
-        <Button variant={"outline"} onClick={saveUserAnswer}>
+        <Button variant={"outline"} onClick={StartStopRecording}>
           {isRecording ? (
             <div className="flex items-center">
               <Mic />
