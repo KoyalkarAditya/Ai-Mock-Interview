@@ -1,4 +1,4 @@
-import { Lightbulb } from "lucide-react";
+import { Lightbulb, Volume2 } from "lucide-react";
 import { QuestionsAndAnswer } from "../page";
 
 export const QuestionSection = ({
@@ -8,6 +8,14 @@ export const QuestionSection = ({
   questionsAndAnswers: QuestionsAndAnswer[] | undefined;
   activeQuestionIndex: number;
 }) => {
+  const textToSpeech = (text: string) => {
+    if ("speechSynthesis" in window) {
+      const speech = new SpeechSynthesisUtterance(text);
+      window.speechSynthesis.speak(speech);
+    } else {
+      alert("sorry your browser does not allow text to speech");
+    }
+  };
   return (
     <div className="my-10 p-5 border rounded-lg">
       <div className="grid grid-cols-2 md:grid-cols-4  gap-5">
@@ -25,6 +33,14 @@ export const QuestionSection = ({
       <div className="my-5 text-md md:text-lg">
         {questionsAndAnswers?.[activeQuestionIndex].question}
       </div>
+      <Volume2
+        className="cursor-pointer"
+        onClick={() =>
+          textToSpeech(
+            questionsAndAnswers?.[activeQuestionIndex].question as string
+          )
+        }
+      />
       <div className="border rounded-lg p-5 bg-blue-100 text-primary mt-16">
         <div className="flex gap-2 items-center ">
           <Lightbulb />

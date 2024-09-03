@@ -3,6 +3,7 @@ import { GetInterview } from "@/app/actions/GetInterview";
 import { useEffect, useState } from "react";
 import { Interview, InterviewProps } from "../page";
 import { QuestionSection } from "./_components/QuestionsSection";
+import { RecordAnswerSection } from "./_components/RecordAnswerSection";
 
 export interface QuestionsAndAnswer {
   question: string;
@@ -30,11 +31,12 @@ export default function StartInterview({ params }: InterviewProps) {
   }
   return (
     <div>
-      <div className="grid grid-cols-1 md:grid-cols-2 ">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
         <QuestionSection
           questionsAndAnswers={questionsAndAnswers}
           activeQuestionIndex={activeQuestionIndex}
         />
+        <RecordAnswerSection />
       </div>
     </div>
   );
