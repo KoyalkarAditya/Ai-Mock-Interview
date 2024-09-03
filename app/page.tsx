@@ -5,6 +5,6 @@ import { useEffect } from "react";
 export default function Home() {
   useEffect(() => {
     redirect("/dashboard");
-  });
+  }, []);
   return <div></div>;
 }
