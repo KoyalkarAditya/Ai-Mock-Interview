@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { Interview, InterviewProps } from "../page";
 import { QuestionSection } from "./_components/QuestionsSection";
 import { RecordAnswerSection } from "./_components/RecordAnswerSection";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 export interface QuestionsAndAnswer {
   question: string;
@@ -41,6 +43,31 @@ export default function StartInterview({ params }: InterviewProps) {
           activeQuestionIndex={activeQuestionIndex}
           interview={interview as Interview}
         />
+      </div>
+      <div className="flex gap-6 justify-end">
+        {activeQuestionIndex > 0 && (
+          <Button
+            onClick={() => {
+              setActiveQuestionIndex(activeQuestionIndex - 1);
+            }}
+          >
+            Prev Question
+          </Button>
+        )}
+        {activeQuestionIndex != 4 && (
+          <Button
+            onClick={() => setActiveQuestionIndex(activeQuestionIndex + 1)}
+          >
+            Next Question
+          </Button>
+        )}
+        {activeQuestionIndex == 4 && (
+          <>
+            <Link href={`/dashboard/interview/${interview?.id}/feedback`}>
+              <Button>End Interview</Button>
+            </Link>
+          </>
+        )}
       </div>
     </div>
   );

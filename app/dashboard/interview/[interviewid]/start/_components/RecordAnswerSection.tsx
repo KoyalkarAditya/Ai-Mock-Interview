@@ -53,9 +53,11 @@ export const RecordAnswerSection = ({
     if (isRecording) {
       console.log(userAnswer);
       recognitionRef.current.stop();
-      UpdateUserAnswer();
+      //UpdateUserAnswer();
+      setIsRecording(false);
     } else {
       recognitionRef.current.start();
+      setIsRecording(true);
     }
   };
 
@@ -83,7 +85,6 @@ export const RecordAnswerSection = ({
     const res = await CreateUserAnswer(interview.id, userAnswerData);
     setLoading(false);
     if (res) {
-      console.log(res);
       toast("User answer Recorded Successfully");
     }
   };
