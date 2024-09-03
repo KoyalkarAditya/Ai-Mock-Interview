@@ -39,7 +39,7 @@ export const Header = () => {
           How it works
         </li>
       </ul>
-      <UserButton />
+      <UserButton showName />
     </div>
   );
 };
